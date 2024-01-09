@@ -1,0 +1,22 @@
+services:
+
+  db:
+    build: ./mysql/
+    volumes:
+      - ./mysql/mysql_data:/var/lib/mysql         # perpetuation of data
+      - ./mysql/sqls:/docker-entrypoint-initdb.d  # pushing initial data
+      - ./mysql/logs:/var/log/mysql               # log record
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+
+  appserver:
+    build: ./app/
+    ports:
+      - 8080:8080
+    volumes:
+      - ./api/cmd:/workdir
+    environment:
+      TZ: Asia/Tokyo
+    tty: true
+    links:
+      - db
