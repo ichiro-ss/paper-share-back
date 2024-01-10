@@ -3,10 +3,13 @@ services:
   db:
     build: ./mysql/
     volumes:
-      - ./mysql/mysql_data:/var/lib/mysql         # perpetuation of data
-      - ./mysql/sqls:/docker-entrypoint-initdb.d  # pushing initial data
-      - ./mysql/logs:/var/log/mysql               # log record
+      - ./data/mysql_data:/var/lib/mysql         # perpetuation of data
+      - ./data/sqls:/docker-entrypoint-initdb.d  # pushing initial data
+      - ./data/logs:/var/log/mysql               # log record
     environment:
+      - MYSQL_USER=share_user
+      - MYSQL_DATABASE=share_database
+      - MYSQL_PASSWORD=pass
       - MYSQL_ROOT_PASSWORD=pass
 
   appserver:
