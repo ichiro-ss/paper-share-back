@@ -1,7 +1,7 @@
 services:
 
   db:
-    build: ./mysql/
+    build: ./data/
     volumes:
       - ./data/mysql_data:/var/lib/mysql         # perpetuation of data
       - ./data/sqls:/docker-entrypoint-initdb.d  # pushing initial data
@@ -13,7 +13,7 @@ services:
       - MYSQL_ROOT_PASSWORD=pass
 
   appserver:
-    build: ./app/
+    build: ./api/
     ports:
       - 8080:8080
     volumes:

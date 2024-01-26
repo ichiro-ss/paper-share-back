@@ -2,7 +2,7 @@
 .DS_Store
 
 # MySQL data
-data/mysql-data
+data/mysql_data
 data/logs
 
 .env
