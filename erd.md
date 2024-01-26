@@ -28,7 +28,7 @@ erDiagram
         bigint id PK "summary id"
         bigint user_id FK "users.id"
         varchar title "paper title"
-        text summary_md "summary markdown"
+        text markdown "summary markdown"
     }
     Paper_Authors {
         bigint id PK "paper-author id"

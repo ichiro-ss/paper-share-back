@@ -1,1 +1,8 @@
+# Mac OS
+.DS_Store
+
+# MySQL data
+data/mysql_data
+data/logs
+
 .env
