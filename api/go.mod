@@ -1,4 +1,4 @@
-module github.com/ichiro-ss/paper-share-back
+module github.com/ichiro-ss/paper-share-back/api
 
 go 1.21.5
 
