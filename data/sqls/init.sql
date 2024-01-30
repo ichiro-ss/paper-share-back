@@ -8,7 +8,7 @@ CREATE TABLE user (
     deletedAt DATETIME
 );
 
-CREATE TABLE authorization (
+CREATE TABLE authorizations (
     loginId VARCHAR(100) PRIMARY KEY,
     userId INT NOT NULL,
     password VARCHAR(20) NOT NULL,
