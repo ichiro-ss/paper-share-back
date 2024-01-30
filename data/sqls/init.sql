@@ -4,7 +4,7 @@ CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     createdAt DATETIME,
-    upcatedAt DATETIME,
+    updatedAt DATETIME,
     deletedAt DATETIME
 );
 
