@@ -33,7 +33,7 @@ CREATE TABLE paper_authors (
     FOREIGN KEY fk_pa_userId(userId) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE author (
+CREATE TABLE authors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
