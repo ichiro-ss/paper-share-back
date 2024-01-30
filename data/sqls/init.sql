@@ -17,7 +17,7 @@ CREATE TABLE authorizations (
     FOREIGN KEY fk_auth_userId(userId) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE summary (
+CREATE TABLE summaries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
     title VARCHAR(50) NOT NULL,
