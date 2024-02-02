@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ichiro-ss/paper-share-back/api/data"
+	"api/data"
 )
 
 func main() {
