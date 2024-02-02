@@ -3,9 +3,9 @@ package data
 import "time"
 
 type User struct {
-	id        int       `json:"id"`
-	name      string    `json:"name"`
-	createdAt time.Time `json:"datetime"`
-	updatedAt time.Time `json:"datetime"`
-	deletedAt time.Time `json:"datetime"`
+	Id        int       `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	DeletedAt time.Time `json:"deletedAt"`
 }
