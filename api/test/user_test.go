@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestCreateUser(t *testing.T) {
+func TestUser(t *testing.T) {
 	id := 123
 	name := "name"
 	user := data.User{Id: id, Name: name}
