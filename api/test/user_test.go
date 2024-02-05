@@ -10,23 +10,26 @@ func TestUser(t *testing.T) {
 	name := "name"
 	user := data.User{Id: id, Name: name}
 
-	// test for creating user
-	if err := user.Create(); err != nil {
-		t.Error(err)
-		return
-	}
+	t.Run("creating user", func(t *testing.T) {
+		if err := user.Create(); err != nil {
+			t.Error(err)
+			return
+		}
+	})
 
-	// test for getting user
-	if test_user, err := data.Get(id); err != nil {
-		t.Error(err)
-		return
-	}
+	t.Run("getting user", func(t *testing.T) {
+		if test_user, err := data.Get(id); err != nil {
+			t.Error(err)
+			return
+		}
+	})
 
 	//test for updating user
 
-	//test for deleting user
-	if err = data.Delete(id); err != nil {
-		t.Error(err)
-		return
-	}
+	t.Run("deleting user", func(t *testing.T) {
+		if err = data.Delete(id); err != nil {
+			t.Error(err)
+			return
+		}
+	})
 }
