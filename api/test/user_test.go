@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestUser(t *testing.T) {
+func TestConnectDB(t *testing.T) {
 	id := 123
 	name := "name"
 	user := data.User{Id: id, Name: name}
