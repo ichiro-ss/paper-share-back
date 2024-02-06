@@ -17,7 +17,7 @@ type UserService struct {
 	db *sql.DB
 }
 
-func (s *UserService) Create(ctx context.Context, loginId, password string) error {
+func (s *UserService) CreateUser(ctx context.Context, loginId, password string) error {
 	// create user table
 	statement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (?)", tableUser, nameCol)
 	prep, err := s.db.Prepare(statement)
