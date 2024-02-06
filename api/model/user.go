@@ -2,7 +2,7 @@ package model
 
 type (
 	CreateUserRequest struct {
-		LoginId  int    `json:"loginId"`
+		LoginId  string `json:"loginId"`
 		Password string `json:"password"`
 	}
 )
