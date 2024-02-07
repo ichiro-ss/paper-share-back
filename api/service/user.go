@@ -13,11 +13,17 @@ var tableUser = "user"
 var nameCol = "name"
 var tableAuth = "authorizations"
 var loginIdCol = "loginId"
-var userIdCol = "userId"
 var passwordCol = "password"
 
 type UserService struct {
 	db *sql.DB
+}
+
+// NewUserService returns new UserService.
+func NewUserService(db *sql.DB) *UserService {
+	return &UserService{
+		db: db,
+	}
 }
 
 func GenerateToken(uid string) string {
@@ -54,7 +60,7 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 	}
 
 	// create auth table
-	statement = fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, userIdCol, passwordCol)
+	statement = fmt.Sprintf("INSERT INTO %s (%s, %v, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, id, passwordCol)
 	prep, err = s.db.Prepare(statement)
 	if err != nil {
 		return "", err
