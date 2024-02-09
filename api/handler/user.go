@@ -5,7 +5,6 @@ import (
 	"api/service"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -22,6 +21,7 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//POST
 	if r.Method == http.MethodPost {
 		var createUserReq model.CreateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&createUserReq); err != nil {
@@ -40,18 +40,15 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				return
 			}
-			fmt.Printf("type of createUserRes: %T\n", createUserRes.Token)
-			fmt.Println("value:", createUserRes.Token)
 			res, err := json.Marshal(createUserRes)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			fmt.Printf("type of res%T\n", res)
-			fmt.Println(string(res))
 			w.Write(res)
 		}
 	}
+	//PUT
 }
 
 func (h *UserHandler) Create(ctx context.Context, req *model.CreateUserRequest) (*model.CreateUserResponse, error) {

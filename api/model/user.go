@@ -8,4 +8,10 @@ type (
 	CreateUserResponse struct {
 		Token string `json:"token"`
 	}
+	EditUserRequest struct {
+		token string `json:"token"`
+	}
+	EditUserResponse struct {
+		name string `json:"name`
+	}
 )
