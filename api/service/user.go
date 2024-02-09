@@ -13,6 +13,7 @@ var tableUser = "user"
 var nameCol = "name"
 var tableAuth = "authorizations"
 var loginIdCol = "loginId"
+var userIdCol = "userId"
 var passwordCol = "password"
 
 type UserService struct {
@@ -60,7 +61,8 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 	}
 
 	// create auth table
-	statement = fmt.Sprintf("INSERT INTO %s (%s, %v, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, id, passwordCol)
+	statement = fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, userIdCol, passwordCol)
+	fmt.Println("statement:", statement)
 	prep, err = s.db.Prepare(statement)
 	if err != nil {
 		return "", err
