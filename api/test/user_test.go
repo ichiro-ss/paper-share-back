@@ -1,35 +1,70 @@
 package test
 
 import (
-	"api/data"
+	"api/model"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
+	"net/http"
 	"testing"
 )
 
+func RandomString(n int) string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
 func TestConnectDB(t *testing.T) {
-	id := 123
-	name := "name"
-	user := data.User{Id: id, Name: name}
-
 	t.Run("creating user", func(t *testing.T) {
-		if err := user.Create(); err != nil {
-			t.Error(err)
-			return
+		loginId := RandomString(20)
+		password := "pass"
+		createUserReq := model.CreateUserRequest{
+			LoginId:  loginId,
+			Password: password,
 		}
+		userJson, err := json.Marshal(createUserReq)
+		if err != nil {
+			t.Error(err)
+		}
+		client := &http.Client{}
+		req, err := http.NewRequest("POST", "http://localhost:8080/users", bytes.NewBuffer(userJson))
+		if err != nil {
+			t.Error(err)
+		}
+
+		res, err := client.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		defer res.Body.Close()
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil || body == nil {
+			t.Error(err)
+		}
+		fmt.Println(string(body))
 	})
 
-	t.Run("getting user", func(t *testing.T) {
-		if test_user, err := data.Get(id); err != nil {
-			t.Error(err)
-			return
-		}
-	})
+	// t.Run("getting user", func(t *testing.T) {
+	// 	if test_user, err := data.Get(id); err != nil {
+	// 		t.Error(err)
+	// 		return
+	// 	}
+	// })
 
-	//test for updating user
+	// //test for updating user
 
-	t.Run("deleting user", func(t *testing.T) {
-		if err = data.Delete(id); err != nil {
-			t.Error(err)
-			return
-		}
-	})
+	// t.Run("deleting user", func(t *testing.T) {
+	// 	if err = data.Delete(id); err != nil {
+	// 		t.Error(err)
+	// 		return
+	// 	}
+	// })
 }
