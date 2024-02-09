@@ -8,10 +8,17 @@ type (
 	CreateUserResponse struct {
 		Token string `json:"token"`
 	}
+
+	ReadUserRequest struct {
+		Token string `json:"token"`
+	}
+	ReadUserResponse struct {
+		Name string `json:"name"`
+	}
 	EditUserRequest struct {
-		token string `json:"token"`
+		Token string `json:"token"`
 	}
 	EditUserResponse struct {
-		name string `json:"name`
+		Name string `json:"name"`
 	}
 )
