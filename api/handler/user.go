@@ -5,12 +5,20 @@ import (
 	"api/service"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
 
 type UserHandler struct {
 	svc *service.UserService
+}
+
+// NewUserHandler returns UserHandler based http.Handler.
+func NewUserHandler(svc *service.UserService) *UserHandler {
+	return &UserHandler{
+		svc: svc,
+	}
 }
 
 func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -23,15 +31,25 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if createUserReq.Password == "" {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			createTodoRes, err := h.Create(r.Context(), &createUserReq)
+			createUserRes, err := h.Create(r.Context(), &createUserReq)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			if err := json.NewEncoder(w).Encode(*createTodoRes); err != nil {
+			if err := json.NewEncoder(w).Encode(*createUserRes); err != nil {
 				log.Println(err)
 				return
 			}
+			fmt.Printf("type of createUserRes: %T\n", createUserRes.Token)
+			fmt.Println("value:", createUserRes.Token)
+			res, err := json.Marshal(createUserRes)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			fmt.Printf("type of res%T\n", res)
+			fmt.Println(string(res))
+			w.Write(res)
 		}
 	}
 }
