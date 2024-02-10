@@ -116,9 +116,9 @@ func (s *UserService) ReadUser(ctx context.Context, token string) (string, error
 	return name, nil
 }
 
-func (s *UserService) EditUser(ctx context.Context, token string) (string, error) {
+func (s *UserService) EditUser(ctx context.Context, token, name string) (string, error) {
 	// read user
-	statement := fmt.Sprintf("SELECT %s from %s WHERE id = ?", nameCol, tableUser)
+	statement := fmt.Sprintf("UPDATE %s SET %s=? WHERE id=?", tableUser, nameCol)
 	prep, err := s.db.Prepare(statement)
 	if err != nil {
 		return "", err
@@ -130,8 +130,7 @@ func (s *UserService) EditUser(ctx context.Context, token string) (string, error
 		return "", err
 	}
 
-	var name string
-	err = prep.QueryRowContext(ctx, id).Scan(&name)
+	_, err = prep.ExecContext(ctx, name, id)
 	if err != nil {
 		return "", err
 	}

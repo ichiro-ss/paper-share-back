@@ -65,6 +65,8 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		} else {
+			editUserReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			// fmt.Println(editUserReq)
 			editUserRes, err := h.Edit(r.Context(), &editUserReq)
 			if err != nil {
 				log.Println(err)
@@ -99,7 +101,7 @@ func (h *UserHandler) Read(ctx context.Context, req *model.ReadUserRequest) (*mo
 }
 
 func (h *UserHandler) Edit(ctx context.Context, req *model.EditUserRequest) (*model.EditUserResponse, error) {
-	n, err := h.svc.EditUser(ctx, req.Token)
+	n, err := h.svc.EditUser(ctx, req.Token, req.Name)
 	if err != nil {
 		return nil, err
 	}
