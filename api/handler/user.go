@@ -21,7 +21,7 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//POST
+	// POST
 	if r.Method == http.MethodPost {
 		var createUserReq model.CreateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&createUserReq); err != nil {
@@ -40,15 +40,26 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				return
 			}
-			res, err := json.Marshal(createUserRes)
+		}
+	}
+	// GET
+	if r.Method == http.MethodGet {
+		var readUserReq model.ReadUserRequest
+		if err := json.NewDecoder(r.Body).Decode(&readUserReq); err != nil {
+			log.Println(err)
+			return
+		} else {
+			readUserRes, err := h.Read(r.Context(), &readUserReq)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			w.Write(res)
+			if err := json.NewEncoder(w).Encode(*readUserRes); err != nil {
+				log.Println(err)
+				return
+			}
 		}
 	}
-	//PUT
 }
 
 func (h *UserHandler) Create(ctx context.Context, req *model.CreateUserRequest) (*model.CreateUserResponse, error) {
@@ -59,4 +70,14 @@ func (h *UserHandler) Create(ctx context.Context, req *model.CreateUserRequest) 
 	var createUserRes model.CreateUserResponse
 	createUserRes.Token = tk
 	return &createUserRes, nil
+}
+
+func (h *UserHandler) Read(ctx context.Context, req *model.ReadUserRequest) (*model.ReadUserResponse, error) {
+	n, err := h.svc.ReadUser(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	var readUserRes model.ReadUserResponse
+	readUserRes.Name = n
+	return &readUserRes, nil
 }
