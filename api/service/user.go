@@ -27,7 +27,7 @@ func NewUserService(db *sql.DB) *UserService {
 	}
 }
 
-func GenerateToken(uid string) string {
+func GenerateToken(uid int64) string {
 	claims := jwt.MapClaims{
 		"user_id": uid,
 		"exp":     time.Now().Add(time.Hour * 72).Unix(),
@@ -39,6 +39,23 @@ func GenerateToken(uid string) string {
 	accessToken, _ := token.SignedString([]byte("ACCESS_SECRET_KEY"))
 
 	return accessToken
+}
+
+func TokenToId(tkStr string) (int64, error) {
+	tk, err := jwt.Parse(tkStr, func(tk *jwt.Token) (interface{}, error) {
+		if _, ok := tk.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", tk.Header["alg"])
+		}
+		return []byte("ACCESS_SECRET_KEY"), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	if claims, ok := tk.Claims.(jwt.MapClaims); ok && tk.Valid {
+		return int64(claims["user_id"].(float64)), nil
+	} else {
+		return 0, fmt.Errorf("wrong bearer token")
+	}
 }
 
 func (s *UserService) CreateUser(ctx context.Context, loginId, password string) (string, error) {
@@ -73,6 +90,29 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 	if err != nil {
 		return "", err
 	}
-	token := GenerateToken(loginId)
+	token := GenerateToken(id)
 	return token, nil
+}
+
+func (s *UserService) ReadUser(ctx context.Context, token string) (string, error) {
+	// read user
+	statement := fmt.Sprintf("SELECT %s from %s WHERE id = ?", nameCol, tableUser)
+	prep, err := s.db.Prepare(statement)
+	if err != nil {
+		return "", err
+	}
+	defer prep.Close()
+
+	id, err := TokenToId(token)
+	if err != nil {
+		return "", err
+	}
+
+	var name string
+	err = prep.QueryRowContext(ctx, id).Scan(&name)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
 }

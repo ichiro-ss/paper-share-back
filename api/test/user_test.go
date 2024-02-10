@@ -52,12 +52,33 @@ func TestConnectDB(t *testing.T) {
 		fmt.Println(string(body))
 	})
 
-	// t.Run("getting user", func(t *testing.T) {
-	// 	if test_user, err := data.Get(id); err != nil {
-	// 		t.Error(err)
-	// 		return
-	// 	}
-	// })
+	t.Run("get user info(name)", func(t *testing.T) {
+		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
+		readUserReq := model.ReadUserRequest{
+			Token: tkStr,
+		}
+		readJson, err := json.Marshal(readUserReq)
+		if err != nil {
+			t.Error(err)
+		}
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", "http://localhost:8080/users", bytes.NewBuffer(readJson))
+		if err != nil {
+			t.Error(err)
+		}
+
+		res, err := client.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		defer res.Body.Close()
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil || body == nil {
+			t.Error(err)
+		}
+		fmt.Println(string(body))
+	})
 
 	// //test for updating user
 
