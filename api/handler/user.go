@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type UserHandler struct {
@@ -45,16 +46,31 @@ func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// GET
 	if r.Method == http.MethodGet {
 		var readUserReq model.ReadUserRequest
-		if err := json.NewDecoder(r.Body).Decode(&readUserReq); err != nil {
+		readUserReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		readUserRes, err := h.Read(r.Context(), &readUserReq)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if err := json.NewEncoder(w).Encode(*readUserRes); err != nil {
+			log.Println(err)
+			return
+		}
+
+	}
+	// PUT
+	if r.Method == http.MethodPut {
+		var editUserReq model.EditUserRequest
+		if err := json.NewDecoder(r.Body).Decode(&editUserReq); err != nil {
 			log.Println(err)
 			return
 		} else {
-			readUserRes, err := h.Read(r.Context(), &readUserReq)
+			editUserRes, err := h.Edit(r.Context(), &editUserReq)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			if err := json.NewEncoder(w).Encode(*readUserRes); err != nil {
+			if err := json.NewEncoder(w).Encode(*editUserRes); err != nil {
 				log.Println(err)
 				return
 			}
@@ -80,4 +96,14 @@ func (h *UserHandler) Read(ctx context.Context, req *model.ReadUserRequest) (*mo
 	var readUserRes model.ReadUserResponse
 	readUserRes.Name = n
 	return &readUserRes, nil
+}
+
+func (h *UserHandler) Edit(ctx context.Context, req *model.EditUserRequest) (*model.EditUserResponse, error) {
+	n, err := h.svc.EditUser(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	var editUserRes model.EditUserResponse
+	editUserRes.Name = n
+	return &editUserRes, nil
 }

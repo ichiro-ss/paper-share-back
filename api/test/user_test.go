@@ -54,18 +54,22 @@ func TestConnectDB(t *testing.T) {
 
 	t.Run("get user info(name)", func(t *testing.T) {
 		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
-		readUserReq := model.ReadUserRequest{
-			Token: tkStr,
-		}
-		readJson, err := json.Marshal(readUserReq)
-		if err != nil {
-			t.Error(err)
-		}
+		// readUserReq := model.UserHeader{
+		// 	Token: tkStr,
+		// }
+		// readJson, err := json.Marshal(readUserReq)
+		// if err != nil {
+		// 	t.Error(err)
+		// }
 		client := &http.Client{}
-		req, err := http.NewRequest("GET", "http://localhost:8080/users", bytes.NewBuffer(readJson))
+		req, err := http.NewRequest("GET", "http://localhost:8080/users", nil)
 		if err != nil {
 			t.Error(err)
 		}
+		bearer := fmt.Sprintf("Bearer %s", tkStr)
+		req.Header.Set("Authorization", bearer)
+		// dump, _ := httputil.DumpRequestOut(req, true)
+		// fmt.Printf("%s", dump)
 
 		res, err := client.Do(req)
 		if err != nil {

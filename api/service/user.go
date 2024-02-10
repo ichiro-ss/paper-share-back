@@ -79,7 +79,6 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 
 	// create auth table
 	statement = fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, userIdCol, passwordCol)
-	fmt.Println("statement:", statement)
 	prep, err = s.db.Prepare(statement)
 	if err != nil {
 		return "", err
@@ -95,6 +94,29 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 }
 
 func (s *UserService) ReadUser(ctx context.Context, token string) (string, error) {
+	// read user
+	statement := fmt.Sprintf("SELECT %s from %s WHERE id = ?", nameCol, tableUser)
+	prep, err := s.db.Prepare(statement)
+	if err != nil {
+		return "", err
+	}
+	defer prep.Close()
+
+	id, err := TokenToId(token)
+	if err != nil {
+		return "", err
+	}
+
+	var name string
+	err = prep.QueryRowContext(ctx, id).Scan(&name)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
+func (s *UserService) EditUser(ctx context.Context, token string) (string, error) {
 	// read user
 	statement := fmt.Sprintf("SELECT %s from %s WHERE id = ?", nameCol, tableUser)
 	prep, err := s.db.Prepare(statement)
