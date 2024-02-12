@@ -25,3 +25,5 @@ services:
       - db
     env_file:
       - ./api/.go_env
+    command: sh -c "go run ./cmd/main.go"
+
