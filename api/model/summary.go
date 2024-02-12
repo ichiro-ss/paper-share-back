@@ -3,7 +3,6 @@ package model
 type (
 	CreateSummaryRequest struct {
 		Token    string `json:"token"`
-		UserId   int    `json:"userId"`
 		Title    string `json:"title"`
 		Markdown string `json:"markdown"`
 	}
