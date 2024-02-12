@@ -9,10 +9,10 @@ type (
 
 	ReadSummaryRequest struct {
 		Token string `json:"token"`
-		Id    string `json:"id"`
+		Id    int    `json:"id"`
 	}
 	ReadSummaryResponse struct {
-		Id       int    `json:"token"`
+		Id       int    `json:"id"`
 		UserId   int    `json:"userId"`
 		Title    string `json:"title"`
 		Markdown string `json:"markdown"`
