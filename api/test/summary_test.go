@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
-
 func TestSummary(t *testing.T) {
 	t.Run("creating summary", func(t *testing.T) {
 		createSummaryReq := model.CreateSummaryRequest{

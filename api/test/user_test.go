@@ -11,6 +11,8 @@ import (
 	"testing"
 )
 
+const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
+
 func RandomString(n int) string {
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
@@ -53,7 +55,6 @@ func TestConnectDB(t *testing.T) {
 	})
 
 	t.Run("get user info(name)", func(t *testing.T) {
-		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
 		// readUserReq := model.UserHeader{
 		// 	Token: tkStr,
 		// }
@@ -84,7 +85,6 @@ func TestConnectDB(t *testing.T) {
 		fmt.Println(string(body))
 	})
 	t.Run("edit user info(name)", func(t *testing.T) {
-		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
 		editUserReq := model.EditUserRequest{
 			Name: "new",
 		}
