@@ -81,6 +81,21 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	if r.Method == http.MethodDelete {
+		var deleteSummaryReq model.DeleteSummaryRequest
+		deleteSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		deleteSummaryReq.Id = summaryId
+		err = h.Delete(r.Context(), &deleteSummaryReq)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }
 
 func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryRequest) error {
@@ -106,4 +121,13 @@ func (h *SummaryHandler) Edit(ctx context.Context, req *model.EditSummaryRequest
 		return nil, err
 	}
 	return editSummaryRes, nil
+}
+
+func (h *SummaryHandler) Delete(ctx context.Context, req *model.DeleteSummaryRequest) error {
+	err := h.svc.DeleteSummary(ctx, req.Token, req.Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
