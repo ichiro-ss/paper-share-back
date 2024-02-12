@@ -1,6 +1,7 @@
 package service
 
 import (
+	"api/model"
 	"context"
 	"database/sql"
 	"fmt"
@@ -37,4 +38,31 @@ func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk str
 		return err
 	}
 	return nil
+}
+
+func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) (*model.ReadSummaryResponse, error) {
+	var readSummaryRes model.ReadSummaryResponse
+	statement := fmt.Sprintf("SELECT * from %s WHERE id = ?", tableSummary)
+	prep, err := s.db.Prepare(statement)
+	if err != nil {
+		return &readSummaryRes, err
+	}
+	defer prep.Close()
+
+	err = prep.QueryRowContext(ctx, id).Scan(&readSummaryRes.Id, &readSummaryRes.UserId, &readSummaryRes.Title, &readSummaryRes.Markdown)
+	if err != nil {
+		return &readSummaryRes, err
+	}
+
+	userId, err := TokenToId(token)
+	if err != nil {
+		return &model.ReadSummaryResponse{}, err
+	}
+	if userId == int64(readSummaryRes.UserId) {
+		readSummaryRes.IsMine = true
+	} else {
+		readSummaryRes.IsMine = false
+	}
+
+	return &readSummaryRes, nil
 }
