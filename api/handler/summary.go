@@ -57,6 +57,30 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+	if r.Method == http.MethodPut {
+		var editSummaryReq model.EditSummaryRequest
+		if err := json.NewDecoder(r.Body).Decode(&editSummaryReq); err != nil {
+			log.Println(err)
+			return
+		} else {
+			editSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			editSummaryReq.Id = summaryId
+			editSummaryRes, err := h.Edit(r.Context(), &editSummaryReq)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if err := json.NewEncoder(w).Encode(*editSummaryRes); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+	}
 }
 
 func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryRequest) error {
@@ -74,4 +98,12 @@ func (h *SummaryHandler) Read(ctx context.Context, req *model.ReadSummaryRequest
 		return nil, err
 	}
 	return readSummaryRes, nil
+}
+
+func (h *SummaryHandler) Edit(ctx context.Context, req *model.EditSummaryRequest) (*model.EditSummaryResponse, error) {
+	editSummaryRes, err := h.svc.EditSummary(ctx, req.Token, req.Title, req.Markdown, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return editSummaryRes, nil
 }
