@@ -32,4 +32,9 @@ type (
 		Markdown string `json:"markdown"`
 		IsMine   bool   `json:"isMine"`
 	}
+
+	DeleteSummaryRequest struct {
+		Token string `json:"token"`
+		Id    int    `json:"id"`
+	}
 )
