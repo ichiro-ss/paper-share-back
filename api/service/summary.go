@@ -96,3 +96,26 @@ func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown
 
 	return &editSummaryRes, nil
 }
+
+func (s *SummaryService) DeleteSummary(ctx context.Context, token string, id int) error {
+	statement := fmt.Sprintf("DELETE FROM %s WHERE id=?", tableSummary)
+	prep, err := s.db.Prepare(statement)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+
+	readRes, err := s.ReadSummary(ctx, token, id)
+	if err != nil {
+		return err
+	}
+	if readRes.IsMine {
+		_, err = prep.ExecContext(ctx, id)
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("this token doesn't match")
+	}
+	return nil
+}
