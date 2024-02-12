@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -36,6 +37,26 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	if r.Method == http.MethodGet {
+		var readSummaryReq model.ReadSummaryRequest
+		readSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		readSummaryReq.Id = summaryId
+		readSummaryRes, err := h.Read(r.Context(), &readSummaryReq)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if err := json.NewEncoder(w).Encode(*readSummaryRes); err != nil {
+			log.Println(err)
+			return
+		}
+
+	}
 }
 
 func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryRequest) error {
@@ -45,4 +66,12 @@ func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryReq
 	}
 
 	return nil
+}
+
+func (h *SummaryHandler) Read(ctx context.Context, req *model.ReadSummaryRequest) (*model.ReadSummaryResponse, error) {
+	readSummaryRes, err := h.svc.ReadSummary(ctx, req.Token, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return readSummaryRes, nil
 }
