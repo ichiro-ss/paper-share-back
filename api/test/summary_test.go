@@ -10,9 +10,10 @@ import (
 	"testing"
 )
 
+const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
+
 func TestSummary(t *testing.T) {
 	t.Run("creating summary", func(t *testing.T) {
-		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
 		createSummaryReq := model.CreateSummaryRequest{
 			Title:    "interesting paper",
 			Markdown: "## this is interesting paper",
@@ -43,7 +44,6 @@ func TestSummary(t *testing.T) {
 	})
 
 	t.Run("reading summary", func(t *testing.T) {
-		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", "http://localhost:8080/summaries", nil)
 		if err != nil {
@@ -70,7 +70,6 @@ func TestSummary(t *testing.T) {
 	})
 
 	t.Run("edit summary info", func(t *testing.T) {
-		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
 		editSummaryReq := model.EditSummaryRequest{
 			Title:    "edited",
 			Markdown: "## Edited",
