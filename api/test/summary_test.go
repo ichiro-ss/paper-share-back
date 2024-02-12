@@ -41,4 +41,30 @@ func TestSummary(t *testing.T) {
 		}
 		fmt.Println("status code:", res.StatusCode)
 	})
+	t.Run("reading summary", func(t *testing.T) {
+		tkStr := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", "http://localhost:8080/summaries", nil)
+		if err != nil {
+			t.Error(err)
+		}
+		bearer := fmt.Sprintf("Bearer %s", tkStr)
+		req.Header.Set("Authorization", bearer)
+
+		q := req.URL.Query()
+		q.Set("id", "1")
+		req.URL.RawQuery = q.Encode()
+
+		res, err := client.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		defer res.Body.Close()
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		fmt.Println(string(body))
+	})
 }
