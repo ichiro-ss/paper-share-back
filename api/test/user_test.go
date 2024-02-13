@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDc4MTA4ODIsInVzZXJfaWQiOjE3fQ.uuswOlREnkOL7GD4pyRt5Deg-klNrvH9hMIC_l92P4w"
+const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDgwNzE0NzYsInVzZXJfaWQiOjQxfQ.5eZJc6lpZF2N4K1ZxUQ-acqmaG-IALFpLVF_mA8qZ9k"
 
 func RandomString(n int) string {
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
