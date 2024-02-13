@@ -23,10 +23,13 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+var (
+	loginId  = RandomString(20)
+	password = "pass"
+)
+
 func TestConnectDB(t *testing.T) {
 	t.Run("creating user", func(t *testing.T) {
-		loginId := RandomString(20)
-		password := "pass"
 		createUserReq := model.CreateUserRequest{
 			LoginId:  loginId,
 			Password: password,
@@ -115,12 +118,31 @@ func TestConnectDB(t *testing.T) {
 		fmt.Println(string(body))
 	})
 
-	// //test for updating user
+	t.Run("login", func(t *testing.T) {
+		loginReq := model.CreateUserRequest{
+			LoginId:  loginId,
+			Password: password,
+		}
+		userJson, err := json.Marshal(loginReq)
+		if err != nil {
+			t.Error(err)
+		}
+		client := &http.Client{}
+		req, err := http.NewRequest("POST", "http://localhost:8080/login", bytes.NewBuffer(userJson))
+		if err != nil {
+			t.Error(err)
+		}
 
-	// t.Run("deleting user", func(t *testing.T) {
-	// 	if err = data.Delete(id); err != nil {
-	// 		t.Error(err)
-	// 		return
-	// 	}
-	// })
+		res, err := client.Do(req)
+		if err != nil {
+			t.Error(err)
+		}
+		defer res.Body.Close()
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil || body == nil {
+			t.Error(err)
+		}
+		fmt.Println(string(body))
+	})
 }
