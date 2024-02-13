@@ -18,5 +18,9 @@ func NewRouter(db *sql.DB) *http.ServeMux {
 	summaryHandler := handler.NewSummaryHandler(summaryService)
 	mux.HandleFunc("/summaries", summaryHandler.ServeHTTP)
 
+	loginService := service.NewLoginService(db)
+	loginHandler := handler.NewLoginHandler(loginService)
+	mux.HandleFunc("/login", loginHandler.ServeHTTP)
+
 	return mux
 }
