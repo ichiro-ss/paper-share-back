@@ -1,18 +1,32 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
+	"time"
+
+	"api/data"
+	"api/handler/router"
 )
 
 func main() {
-	h1 := func(w http.ResponseWriter, _ *http.Request) {
-		fmt.Fprintln(w, "Hello World!")
+	// set time zone
+	var err error
+	time.Local, err = time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
 	}
 
-	http.HandleFunc("/", h1)
+	db := data.GetMydb()
+	defer db.Close()
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	mux := router.NewRouter(db)
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+	err = srv.ListenAndServe()
+	if !errors.Is(err, http.ErrServerClosed) {
 		panic(err)
 	}
 }

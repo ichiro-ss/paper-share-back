@@ -1,6 +1,6 @@
 FROM golang:1.22-rc-alpine
 
-RUN apk update && apk add git
+RUN apk update && apk add git && apk add bash
 
 RUN mkdir -p /go/src/github.com/api
 

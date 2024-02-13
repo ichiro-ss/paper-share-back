@@ -6,3 +6,4 @@ data/mysql_data
 data/logs
 
 .env
+api/.go_env
