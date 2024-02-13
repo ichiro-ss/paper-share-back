@@ -1,6 +1,14 @@
 package model
 
 type (
+	Summary struct {
+		Id       int    `json:"id"`
+		UserId   int    `json:"userId"`
+		Title    string `json:"title"`
+		Markdown string `json:"markdown"`
+		IsMine   bool   `json:"isMine"`
+	}
+
 	CreateSummaryRequest struct {
 		Token    string `json:"token"`
 		Title    string `json:"title"`
@@ -12,11 +20,7 @@ type (
 		Id    int    `json:"id"`
 	}
 	ReadSummaryResponse struct {
-		Id       int    `json:"id"`
-		UserId   int    `json:"userId"`
-		Title    string `json:"title"`
-		Markdown string `json:"markdown"`
-		IsMine   bool   `json:"isMine"`
+		Summaries []*Summary `json:"summaries"`
 	}
 
 	EditSummaryRequest struct {
