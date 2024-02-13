@@ -40,31 +40,45 @@ func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk str
 	return nil
 }
 
-func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) (*model.ReadSummaryResponse, error) {
-	var readSummaryRes model.ReadSummaryResponse
-	statement := fmt.Sprintf("SELECT * from %s WHERE id = ?", tableSummary)
-	prep, err := s.db.Prepare(statement)
-	if err != nil {
-		return &readSummaryRes, err
-	}
-	defer prep.Close()
+func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) ([]*model.Summary, error) {
+	var summaries []*model.Summary
+	readAll := fmt.Sprintf("SELECT * from %s ORDER BY id", tableSummary)
+	readWID := fmt.Sprintf("SELECT * from %s WHERE id = ?", tableSummary)
 
-	err = prep.QueryRowContext(ctx, id).Scan(&readSummaryRes.Id, &readSummaryRes.UserId, &readSummaryRes.Title, &readSummaryRes.Markdown)
-	if err != nil {
-		return &readSummaryRes, err
+	var rows *sql.Rows
+	var err error
+	if id == 0 {
+		rows, err = s.db.QueryContext(ctx, readAll)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		rows, err = s.db.QueryContext(ctx, readWID, id)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	userId, err := TokenToId(token)
 	if err != nil {
-		return &model.ReadSummaryResponse{}, err
+		return nil, err
 	}
-	if userId == int64(readSummaryRes.UserId) {
-		readSummaryRes.IsMine = true
-	} else {
-		readSummaryRes.IsMine = false
+	defer rows.Close()
+	for rows.Next() {
+		var summary model.Summary
+		err := rows.Scan(&summary.Id, &summary.UserId, &summary.Title, &summary.Markdown)
+		if err != nil {
+			return nil, err
+		}
+		if userId == int64(summary.UserId) {
+			summary.IsMine = true
+		} else {
+			summary.IsMine = false
+		}
+		summaries = append(summaries, &summary)
 	}
 
-	return &readSummaryRes, nil
+	return summaries, nil
 }
 
 func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown string, id int) (*model.EditSummaryResponse, error) {
@@ -80,13 +94,13 @@ func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown
 	if err != nil {
 		return nil, err
 	}
-	if readRes.IsMine {
+	if readRes[0].IsMine {
 		_, err = prep.ExecContext(ctx, title, markdown, id)
 		if err != nil {
 			return nil, err
 		}
-		editSummaryRes.Id = readRes.Id
-		editSummaryRes.UserId = readRes.UserId
+		editSummaryRes.Id = readRes[0].Id
+		editSummaryRes.UserId = readRes[0].UserId
 		editSummaryRes.Title = title
 		editSummaryRes.Markdown = markdown
 		editSummaryRes.IsMine = true
@@ -109,7 +123,7 @@ func (s *SummaryService) DeleteSummary(ctx context.Context, token string, id int
 	if err != nil {
 		return err
 	}
-	if readRes.IsMine {
+	if readRes[0].IsMine {
 		_, err = prep.ExecContext(ctx, id)
 		if err != nil {
 			return err
