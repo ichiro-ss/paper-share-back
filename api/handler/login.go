@@ -32,6 +32,7 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			loginRes, err := h.Create(r.Context(), &loginReq)
 			if err != nil {
+				w.WriteHeader(http.StatusNotFound)
 				log.Println(err)
 				return
 			}
