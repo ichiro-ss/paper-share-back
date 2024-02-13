@@ -17,7 +17,7 @@ type (
 	}
 	EditUserRequest struct {
 		Token string `json:"token"`
-		Name string `json:"name"`
+		Name  string `json:"name"`
 	}
 	EditUserResponse struct {
 		Name string `json:"name"`
