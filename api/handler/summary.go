@@ -37,15 +37,17 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	// GET
 	if r.Method == http.MethodGet {
 		var readSummaryReq model.ReadSummaryRequest
 		readSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if err != nil {
-			log.Println(err)
-			return
+		q := r.URL.Query()
+		id, isExist := q["id"]
+		if isExist && len(id) != 0 {
+			readSummaryReq.Id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+		} else {
+			readSummaryReq.Id = 0
 		}
-		readSummaryReq.Id = summaryId
 		readSummaryRes, err := h.Read(r.Context(), &readSummaryReq)
 		if err != nil {
 			log.Println(err)
@@ -55,8 +57,8 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-
 	}
+	// EDIT
 	if r.Method == http.MethodPut {
 		var editSummaryReq model.EditSummaryRequest
 		if err := json.NewDecoder(r.Body).Decode(&editSummaryReq); err != nil {
@@ -65,7 +67,7 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			editSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 			summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
-			if err != nil {
+			if err != nil || summaryId == 0 {
 				log.Println(err)
 				return
 			}
@@ -81,11 +83,12 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	// UPDATE
 	if r.Method == http.MethodDelete {
 		var deleteSummaryReq model.DeleteSummaryRequest
 		deleteSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 		summaryId, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if err != nil {
+		if err != nil || summaryId == 0 {
 			log.Println(err)
 			return
 		}
@@ -108,11 +111,11 @@ func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryReq
 }
 
 func (h *SummaryHandler) Read(ctx context.Context, req *model.ReadSummaryRequest) (*model.ReadSummaryResponse, error) {
-	readSummaryRes, err := h.svc.ReadSummary(ctx, req.Token, req.Id)
+	summaries, err := h.svc.ReadSummary(ctx, req.Token, req.Id)
 	if err != nil {
 		return nil, err
 	}
-	return readSummaryRes, nil
+	return &model.ReadSummaryResponse{Summaries: summaries}, nil
 }
 
 func (h *SummaryHandler) Edit(ctx context.Context, req *model.EditSummaryRequest) (*model.EditSummaryResponse, error) {
