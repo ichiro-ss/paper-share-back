@@ -16,7 +16,7 @@ func NewRouter(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/users", userHandler.ServeHTTP)
 
 	summaryService := service.NewSummaryService(db)
-	summaryHandler := middleware.CORS(handler.NewSummaryHandler(summaryService))
+	summaryHandler := middleware.CORS(middleware.CheckToken(handler.NewSummaryHandler(summaryService)))
 	mux.HandleFunc("/summaries", summaryHandler.ServeHTTP)
 
 	loginService := service.NewLoginService(db)
