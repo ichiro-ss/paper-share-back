@@ -27,3 +27,6 @@ services:
       - ./api/.go_env
     # command: sh -c "go run ./cmd/main.go"
 
+  nginx:
+    build: ./nginx/
+
