@@ -16,7 +16,7 @@
 
 
 ## ウェブページ
-[こちら](http://papers-pub.s3-website-us-east-1.amazonaws.com/#/)からアクセスできます．
+[こちら](https://share-papers.net/#/)からアクセスできます．
 
 ## API Doc
 [API.md](/API.md)に記載
