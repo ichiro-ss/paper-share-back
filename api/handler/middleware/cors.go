@@ -8,7 +8,7 @@ func CORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		if r.Method == "OPTIONS" {
 			// w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-			w.Header().Set("Access-Control-Allow-Origin", "http://papers-pub.s3-website-us-east-1.amazonaws.com")
+			w.Header().Set("Access-Control-Allow-Origin", "http://share-papers.net.s3-website-us-east-1.amazonaws.com")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token, Authorization")
