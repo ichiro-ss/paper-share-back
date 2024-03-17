@@ -17,7 +17,7 @@
 
 
 ## ウェブページ
-[こちら](https://share-papers.net/#/)からアクセスできます．
+[こちら](http://share-papers.net/#/)からアクセスできます．
 
 ## API Doc
 [API.md](/API.md)に記載
