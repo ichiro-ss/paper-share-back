@@ -2,17 +2,19 @@ package model
 
 type (
 	Summary struct {
-		Id       int    `json:"id"`
-		UserId   int    `json:"userId"`
-		Title    string `json:"title"`
-		Markdown string `json:"markdown"`
-		IsMine   bool   `json:"isMine"`
+		Id       int      `json:"id"`
+		UserId   int      `json:"userId"`
+		Title    string   `json:"title"`
+		Markdown string   `json:"markdown"`
+		Authors  []string `json:"authors"`
+		IsMine   bool     `json:"isMine"`
 	}
 
 	CreateSummaryRequest struct {
-		Token    string `json:"token"`
-		Title    string `json:"title"`
-		Markdown string `json:"markdown"`
+		Token    string   `json:"token"`
+		Title    string   `json:"title"`
+		Markdown string   `json:"markdown"`
+		Authors  []string `json:"authors"`
 	}
 
 	ReadSummaryRequest struct {
@@ -24,17 +26,19 @@ type (
 	}
 
 	EditSummaryRequest struct {
-		Token    string `json:"token"`
-		Id       int    `json:"Id"`
-		Title    string `json:"title"`
-		Markdown string `json:"markdown"`
+		Token    string   `json:"token"`
+		Id       int      `json:"Id"`
+		Title    string   `json:"title"`
+		Markdown string   `json:"markdown"`
+		Authors  []string `json:"authors"`
 	}
 	EditSummaryResponse struct {
-		Id       int    `json:"id"`
-		UserId   int    `json:"userId"`
-		Title    string `json:"title"`
-		Markdown string `json:"markdown"`
-		IsMine   bool   `json:"isMine"`
+		Id       int      `json:"id"`
+		UserId   int      `json:"userId"`
+		Title    string   `json:"title"`
+		Markdown string   `json:"markdown"`
+		Authors  []string `json:"authors"`
+		IsMine   bool     `json:"isMine"`
 	}
 
 	DeleteSummaryRequest struct {
