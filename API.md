@@ -1,5 +1,5 @@
 ---
-title: 個人プロジェクト
+title: paper-share
 language_tabs:
   - shell: Shell
   - http: HTTP
@@ -15,15 +15,13 @@ search: true
 code_clipboard: true
 highlight_theme: darkula
 headingLevel: 2
-generator: "@tarslib/widdershins v4.0.20"
+generator: "@tarslib/widdershins v4.0.22"
 
 ---
 
-# 個人プロジェクト
+# paper-share
 
 Base URLs:
-
-* <a href="https://prod.your-api-server.com">本番環境: https://prod.your-api-server.com</a>
 
 # Authentication
 
@@ -225,6 +223,9 @@ GET /summaries
   "userId": 0,
   "title": "string",
   "markdown": "string",
+  "authors": [
+    "string"
+  ],
   "isMine": true
 }
 ```
@@ -245,6 +246,7 @@ HTTP Status Code **200**
 |» userId|integer|true|none||id of user who wrote the summary|
 |» title|string|true|none||paper's title|
 |» markdown|string|true|none||paper's summary|
+|» authors|[string]¦null|false|none||none|
 |» isMine|boolean|true|none||none|
 
 ## POST 要約投稿
@@ -256,7 +258,10 @@ POST /summaries
 ```json
 {
   "title": "string",
-  "markdown": "string"
+  "markdown": "string",
+  "authors": [
+    "string"
+  ]
 }
 ```
 
@@ -268,6 +273,7 @@ POST /summaries
 |body|body|object| no |none|
 |» title|body|string| yes |none|
 |» markdown|body|string| yes |none|
+|» authors|body|[string]| yes |none|
 
 > Response Examples
 
@@ -306,6 +312,9 @@ GET /summaries/{id}
   "userId": 0,
   "title": "string",
   "markdown": "string",
+  "authors": [
+    "string"
+  ],
   "isMine": true
 }
 ```
@@ -326,6 +335,7 @@ HTTP Status Code **200**
 |» userId|integer|true|none||id of user who wrote the summary|
 |» title|string|true|none||paper's title|
 |» markdown|string|true|none||paper's summary|
+|» authors|[string]¦null|false|none||none|
 |» isMine|boolean|true|none||none|
 
 ## PUT 要約更新
@@ -349,6 +359,9 @@ PUT /summaries/{id}
   "userId": 0,
   "title": "string",
   "markdown": "string",
+  "authors": [
+    "string"
+  ],
   "isMine": true
 }
 ```
@@ -369,6 +382,7 @@ HTTP Status Code **200**
 |» userId|integer|true|none||id of user who wrote the summary|
 |» title|string|true|none||paper's title|
 |» markdown|string|true|none||paper's summary|
+|» authors|[string]¦null|false|none||none|
 |» isMine|boolean|true|none||none|
 
 ## DELETE 要約削除
@@ -458,7 +472,10 @@ DELETE /summaries/{id}
   "id": 0,
   "userId": 0,
   "title": "string",
-  "markdown": "string"
+  "markdown": "string",
+  "authors": [
+    "string"
+  ]
 }
 
 ```
@@ -471,6 +488,7 @@ DELETE /summaries/{id}
 |userId|integer|true|none||id of user who wrote the summary|
 |title|string|true|none||paper's title|
 |markdown|string|true|none||paper's summary|
+|authors|[string]¦null|false|none||none|
 
 <h2 id="tocS_Authorizations">Authorizations</h2>
 
