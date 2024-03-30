@@ -8,8 +8,13 @@ import (
 )
 
 const tableSummary = "summaries"
+const tableAuthor = "authors"
+const tableSummaryAuthor = "summary_authors"
 const titleCol = "title"
 const markdownCol = "markdown"
+const authorNameCol = "name"
+const summaryIdCol = "summaryId"
+const authorIdCol = "authorId"
 
 type SummaryService struct {
 	db *sql.DB
@@ -21,11 +26,13 @@ func NewSummaryService(db *sql.DB) *SummaryService {
 	}
 }
 
-func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk string) error {
+// CreateSummary creates a new summary (+ authors + summary_authors map).
+func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk string, authors []string) error {
 	id, err := TokenToId(token)
 	if err != nil {
 		return err
 	}
+	// insert summary
 	statement := fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", tableSummary, userIdCol, titleCol, markdownCol)
 	prep, err := s.db.Prepare(statement)
 	if err != nil {
@@ -33,9 +40,56 @@ func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk str
 	}
 	defer prep.Close()
 
-	_, err = prep.ExecContext(ctx, id, title, mk)
+	res, err := prep.ExecContext(ctx, id, title, mk)
 	if err != nil {
 		return err
+	}
+	lid, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+	summaryId := int(lid)
+
+	// insert authors and summary_authors map
+	selectAuthor := fmt.Sprintf("SELECT id FROM %s WHERE name = ?", tableAuthor)
+	insertAuthor := fmt.Sprintf("INSERT INTO %s (%s) VALUES (?)", tableAuthor, authorNameCol)
+	insertMap := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", tableSummaryAuthor, summaryIdCol, authorIdCol)
+	prep_select, err := s.db.Prepare(selectAuthor)
+	if err != nil {
+		return err
+	}
+	defer prep_select.Close()
+	prep_in_author, err := s.db.Prepare(insertAuthor)
+	if err != nil {
+		return err
+	}
+	defer prep_in_author.Close()
+	prep_in_map, err := s.db.Prepare(insertMap)
+	if err != nil {
+		return err
+	}
+	defer prep_in_map.Close()
+	for _, author := range authors {
+		authorId := 0
+		err := prep_select.QueryRowContext(ctx, author).Scan(&authorId)
+		// if author doesn't exist, insert author
+		if err != nil && err == sql.ErrNoRows {
+			res, err_in := prep_in_author.ExecContext(ctx, author)
+			if err_in != nil {
+				return err_in
+			}
+			lid, err_id := res.LastInsertId()
+			if err_id != nil {
+				return err_id
+			}
+			authorId = int(lid)
+		} else if err != nil {
+			return err
+		}
+		_, err = prep_in_map.ExecContext(ctx, summaryId, authorId)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
