@@ -249,6 +249,7 @@ func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown
 		editSummaryRes.UserId = readRes[0].UserId
 		editSummaryRes.Title = title
 		editSummaryRes.Markdown = markdown
+		editSummaryRes.Authors = authors
 		editSummaryRes.IsMine = true
 	} else {
 		return nil, fmt.Errorf("this token doesn't match")
