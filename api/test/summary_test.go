@@ -94,6 +94,7 @@ func TestSummary(t *testing.T) {
 		editSummaryReq := model.EditSummaryRequest{
 			Title:    "edited",
 			Markdown: "## Edited",
+			Authors:  []string{"E. Edit", "K. Rowling"},
 		}
 		SummaryJson, err := json.Marshal(editSummaryReq)
 		if err != nil {
