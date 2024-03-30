@@ -170,7 +170,8 @@ func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) 
 	return summaries, nil
 }
 
-func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown string, id int) (*model.EditSummaryResponse, error) {
+// EditSummary edits a summary.
+func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown string, id int, authors []string) (*model.EditSummaryResponse, error) {
 	var editSummaryRes model.EditSummaryResponse
 	statement := fmt.Sprintf("UPDATE %s SET %s=?, %s=? WHERE id=?", tableSummary, titleCol, markdownCol)
 	prep, err := s.db.Prepare(statement)
@@ -188,6 +189,62 @@ func (s *SummaryService) EditSummary(ctx context.Context, token, title, markdown
 		if err != nil {
 			return nil, err
 		}
+		// edit authors
+		selectAuthor := fmt.Sprintf("SELECT id FROM %s WHERE name = ?", tableAuthor)
+		insertAuthor := fmt.Sprintf("INSERT INTO %s (%s) VALUES (?)", tableAuthor, authorNameCol)
+		deleteMap := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", tableSummaryAuthor, summaryIdCol)
+		insertMap := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", tableSummaryAuthor, summaryIdCol, authorIdCol)
+		prep_select, err := s.db.Prepare(selectAuthor)
+		if err != nil {
+			return nil, err
+		}
+		defer prep_select.Close()
+		prep_in_author, err := s.db.Prepare(insertAuthor)
+		if err != nil {
+			return nil, err
+		}
+		defer prep_in_author.Close()
+		prep_del_map, err := s.db.Prepare(deleteMap)
+		if err != nil {
+			return nil, err
+		}
+		defer prep_del_map.Close()
+		prep_in_map, err := s.db.Prepare(insertMap)
+		if err != nil {
+			return nil, err
+		}
+		defer prep_in_map.Close()
+
+		// delete summary_authors map
+		_, err = prep_del_map.ExecContext(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+
+		// change authors
+		for _, author := range authors {
+			authorId := 0
+			err := prep_select.QueryRowContext(ctx, author).Scan(&authorId)
+			// if author doesn't exist, insert author
+			if err != nil && err == sql.ErrNoRows {
+				res, err_in := prep_in_author.ExecContext(ctx, author)
+				if err_in != nil {
+					return nil, err_in
+				}
+				lid, err_id := res.LastInsertId()
+				if err_id != nil {
+					return nil, err_id
+				}
+				authorId = int(lid)
+			} else if err != nil {
+				return nil, err
+			}
+			_, err = prep_in_map.ExecContext(ctx, id, authorId)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		editSummaryRes.Id = readRes[0].Id
 		editSummaryRes.UserId = readRes[0].UserId
 		editSummaryRes.Title = title
