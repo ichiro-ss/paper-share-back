@@ -7,8 +7,8 @@ title: "PAPER_SHARE"
 erDiagram
     Users ||--|| Authorization : ""
     Users }|--o{ Summaries: ""
-    Paper_Authors }|--|{ Summaries: ""
-    Paper_Authors }|--|{ Authors: ""
+    Summary_Authors }|--|{ Summaries: ""
+    Summary_Authors }|--|{ Authors: ""
 
     Users {
         bigint id PK "user id"
@@ -30,9 +30,9 @@ erDiagram
         varchar title "paper title"
         text markdown "summary markdown"
     }
-    Paper_Authors {
-        bigint id PK "paper-author id"
-        bigint paper_id FK "paper(summary) id"
+    Summary_Authors {
+        bigint id PK "summary-author id"
+        bigint summary_id FK "summary id"
         bigint author_id FK "author id"
     }
     Authors {
