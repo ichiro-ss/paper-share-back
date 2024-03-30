@@ -15,6 +15,7 @@ func TestSummary(t *testing.T) {
 		createSummaryReq := model.CreateSummaryRequest{
 			Title:    "interesting paper",
 			Markdown: "## this is interesting paper",
+			Authors:  []string{"S. Martin", "K. Rowling"},
 		}
 		summaryJson, err := json.Marshal(createSummaryReq)
 		if err != nil {
@@ -133,7 +134,7 @@ func TestSummary(t *testing.T) {
 		req.Header.Set("Authorization", bearer)
 
 		q := req.URL.Query()
-		q.Set("id", "14")
+		q.Set("id", "2")
 		req.URL.RawQuery = q.Encode()
 
 		res, err := client.Do(req)

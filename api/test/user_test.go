@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-const tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDgwNzE0NzYsInVzZXJfaWQiOjQxfQ.5eZJc6lpZF2N4K1ZxUQ-acqmaG-IALFpLVF_mA8qZ9k"
+var tkStr = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTIwNDQyNDIsInVzZXJfaWQiOjF9.kLeReJqwfnP3EjM2aodMSSMVi9r3AL9Dey7bSh5eth0"
 
 func RandomString(n int) string {
 	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -54,6 +54,11 @@ func TestConnectDB(t *testing.T) {
 		if err != nil || body == nil {
 			t.Error(err)
 		}
+		createUserRes := model.CreateUserResponse{}
+		if err := json.Unmarshal(body, &createUserRes); err != nil {
+			t.Error(err)
+		}
+		tkStr = createUserRes.Token
 		fmt.Println(string(body))
 	})
 
