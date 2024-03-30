@@ -83,7 +83,7 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	// UPDATE
+	// DELETE
 	if r.Method == http.MethodDelete {
 		var deleteSummaryReq model.DeleteSummaryRequest
 		deleteSummaryReq.Token = strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
@@ -119,7 +119,7 @@ func (h *SummaryHandler) Read(ctx context.Context, req *model.ReadSummaryRequest
 }
 
 func (h *SummaryHandler) Edit(ctx context.Context, req *model.EditSummaryRequest) (*model.EditSummaryResponse, error) {
-	editSummaryRes, err := h.svc.EditSummary(ctx, req.Token, req.Title, req.Markdown, req.Id)
+	editSummaryRes, err := h.svc.EditSummary(ctx, req.Token, req.Title, req.Markdown, req.Id, req.Authors)
 	if err != nil {
 		return nil, err
 	}
