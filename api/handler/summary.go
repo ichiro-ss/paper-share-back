@@ -102,7 +102,7 @@ func (h *SummaryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *SummaryHandler) Create(ctx context.Context, req *model.CreateSummaryRequest) error {
-	err := h.svc.CreateSummary(ctx, req.Token, req.Title, req.Markdown)
+	err := h.svc.CreateSummary(ctx, req.Token, req.Title, req.Markdown, req.Authors)
 	if err != nil {
 		return err
 	}
