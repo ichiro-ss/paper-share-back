@@ -20,7 +20,7 @@ CREATE TABLE authorizations (
 CREATE TABLE summaries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
-    title VARCHAR(50) NOT NULL,
+    title VARCHAR(120) NOT NULL,
     markdown TEXT NOT NULL,
     FOREIGN KEY fk_summary_userId(userId) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
