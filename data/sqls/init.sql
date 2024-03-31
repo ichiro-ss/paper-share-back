@@ -20,20 +20,20 @@ CREATE TABLE authorizations (
 CREATE TABLE summaries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
-    title VARCHAR(50) NOT NULL,
+    title VARCHAR(120) NOT NULL,
     markdown TEXT NOT NULL,
     FOREIGN KEY fk_summary_userId(userId) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE paper_authors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    paperId INT NOT NULL,
-    userId INT NOT NULL,
-    FOREIGN KEY fk_pa_paperId(paperId) REFERENCES summary(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY fk_pa_userId(userId) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE authors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE summary_authors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    summaryId INT NOT NULL,
+    authorId INT NOT NULL,
+    FOREIGN KEY fk_pa_summaryId(summaryId) REFERENCES summaries(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY fk_pa_authorId(authorId) REFERENCES authors(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
