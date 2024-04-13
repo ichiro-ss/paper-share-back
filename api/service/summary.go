@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 const tableSummary = "summaries"
@@ -97,68 +98,45 @@ func (s *SummaryService) CreateSummary(ctx context.Context, token, title, mk str
 // ReadSummary reads summaries.
 func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) ([]*model.Summary, error) {
 	var summaries []*model.Summary
-	readAll := fmt.Sprintf("SELECT * from %s ORDER BY id", tableSummary)
-	readWID := fmt.Sprintf("SELECT * from %s WHERE id = ?", tableSummary)
-	readAuthorIDs := fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", authorIdCol, tableSummaryAuthor, summaryIdCol)
-	prep_read_author_ids, err := s.db.Prepare(readAuthorIDs)
-	if err != nil {
-		return nil, err
-	}
-	readAuthor := fmt.Sprintf("SELECT %s FROM %s WHERE id = ?", authorNameCol, tableAuthor)
-	prep_read_authors, err := s.db.Prepare(readAuthor)
-	if err != nil {
-		return nil, err
-	}
-	// read summaries
+
+	// get summaries and authors info using JOIN
+	query := fmt.Sprintf("SELECT s.id, s.userId, s.title, s.markdown, "+
+		"GROUP_CONCAT(a.name SEPARATOR '$') AS authors "+
+		"FROM %s s "+
+		"LEFT JOIN %s sa ON s.id = sa.summaryId "+
+		"LEFT JOIN %s a ON sa.authorId = a.id", tableSummary, tableSummaryAuthor, tableAuthor)
+
 	var rows *sql.Rows
-	if id == 0 {
-		rows, err = s.db.QueryContext(ctx, readAll)
-		if err != nil {
-			return nil, err
-		}
+	var err error
+	if id != 0 {
+		query = fmt.Sprintf("%s WHERE s.id = ? GROUP BY s.id", query)
+		rows, err = s.db.QueryContext(ctx, query, id)
 	} else {
-		rows, err = s.db.QueryContext(ctx, readWID, id)
-		if err != nil {
-			return nil, err
-		}
+		query = query + " GROUP BY s.id"
+		rows, err = s.db.QueryContext(ctx, query)
 	}
 
-	// append summaries
-	userId, err := TokenToId(token)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
+	userId, err := TokenToId(token)
+	if err != nil {
+		return nil, err
+	}
+
+	// split authors by '$'
 	for rows.Next() {
 		var summary model.Summary
-		err := rows.Scan(&summary.Id, &summary.UserId, &summary.Title, &summary.Markdown)
+		var authors sql.NullString
+		err := rows.Scan(&summary.Id, &summary.UserId, &summary.Title, &summary.Markdown, &authors)
 		if err != nil {
 			return nil, err
 		}
+		summary.Authors = strings.Split(authors.String, "$")
+		fmt.Println(summary)
 
-		// read authors
-		authors := []string{}
-		rows_author_ids, err := prep_read_author_ids.QueryContext(ctx, summary.Id)
-		if err != nil {
-			return nil, err
-		}
-		for rows_author_ids.Next() {
-			var authorID int
-			err := rows_author_ids.Scan(&authorID)
-			if err != nil {
-				return nil, err
-			}
-			var author string
-			err = prep_read_authors.QueryRowContext(ctx, authorID).Scan(&author)
-			if err != nil {
-				return nil, err
-			}
-			authors = append(authors, author)
-		}
-		summary.Authors = authors
-		rows_author_ids.Close()
-
-		// check if the summary is mine
 		if userId == int64(summary.UserId) {
 			summary.IsMine = true
 		} else {
