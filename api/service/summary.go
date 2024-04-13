@@ -126,6 +126,7 @@ func (s *SummaryService) ReadSummary(ctx context.Context, token string, id int) 
 		return nil, err
 	}
 
+	// split authors by '$'
 	for rows.Next() {
 		var summary model.Summary
 		var authors sql.NullString
