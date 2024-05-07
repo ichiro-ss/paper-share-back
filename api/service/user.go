@@ -27,7 +27,7 @@ func NewUserService(db *sql.DB) *UserService {
 	}
 }
 
-func GenerateToken(uid int64) string {
+func GenerateToken(uid int64, c chan<- string) {
 	claims := jwt.MapClaims{
 		"user_id": uid,
 		"exp":     time.Now().Add(time.Hour * 72).Unix(),
@@ -37,8 +37,7 @@ func GenerateToken(uid int64) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	accessToken, _ := token.SignedString([]byte("ACCESS_SECRET_KEY"))
-
-	return accessToken
+	c <- accessToken
 }
 
 func TokenToId(tkStr string) (int64, error) {
@@ -77,6 +76,11 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 		return "", err
 	}
 
+	c := make(chan string)
+	go GenerateToken(id, c)
+	token := <-c
+	close(c)
+
 	// create auth table
 	statement = fmt.Sprintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)", tableAuth, loginIdCol, userIdCol, passwordCol)
 	prep, err = s.db.Prepare(statement)
@@ -89,7 +93,6 @@ func (s *UserService) CreateUser(ctx context.Context, loginId, password string) 
 	if err != nil {
 		return "", err
 	}
-	token := GenerateToken(id)
 	return token, nil
 }
 

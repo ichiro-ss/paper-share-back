@@ -30,10 +30,13 @@ func (s *LoginService) Login(ctx context.Context, loginId, password string) (str
 	if err != nil {
 		return "", err
 	}
+	c := make(chan string)
+	go GenerateToken(userId, c)
+	token := <-c
+	close(c)
 
 	if password != passData {
 		return "", fmt.Errorf("wrong password")
 	}
-	token := GenerateToken(userId)
 	return token, nil
 }
